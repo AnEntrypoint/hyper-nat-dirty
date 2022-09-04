@@ -49,8 +49,13 @@ const initserver = async (argv) => {
     const server = node.createServer();
     server.listen(keyPair);
 
-    let sent=0, received=0;
-    setInterval(()=>{console.log({sent, received})}, 1000);
+    let sent = 0, received = 0;
+    setInterval(() => {
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(JSON.stringify({ sent, received }, null, 2))
+    }, 10000);
+    
     server.on("connection", function (conn) {
         console.log('connected')
         conn.on('data', (buf) => {
@@ -79,8 +84,12 @@ const initclient = async (argv) => {
     var server = udp.createSocket('udp4');
 
     const conn = await node.connect(publicKey);
-    let sent=0, received=0;
-    setInterval(()=>{console.log({sent, received})}, 1000);
+    let sent = 0, received = 0;
+    setInterval(() => {
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(JSON.stringify({ sent, received }, null, 2))
+    }, 10000);
 
     conn.on('open', () => {
         console.log('Client connected!')
@@ -95,7 +104,7 @@ const initclient = async (argv) => {
             })
             server.on('message', async (buf, rinfo) => {
                 ++sent;
-                if(!clientport) {
+                if (!clientport) {
                     clientport = rinfo.port;
                     clientaddress = rinfo.address;
                     server.connect(clientport);
@@ -122,14 +131,3 @@ if (argv.argv.mode == 'client') {
 if (argv.argv.mode == 'server') {
     initserver(argv.argv)
 }
-
-/*var client = udp.createSocket('udp4');
-client.connect(27015, '192.169.16.126')
-client.on('connect', ()=>{
-    client.on('message',function(msg,info){
-        console.log('Data received from server : ' + msg.toString());
-        console.log('Received %d bytes from %s:%d\n',msg.length, info.address, info.port);
-    });
-    console.log('Sending:', Buffer.from('ffffffff54536f7572636520456e67696e6520517565727900', 'hex').toString());
-    client.send(Buffer.from('ffffffff54536f7572636520456e67696e6520517565727900', 'hex'));
-})*/
