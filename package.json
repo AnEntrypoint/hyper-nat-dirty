@@ -1,0 +1,16 @@
+{
+  "name": "udp-forward",
+  "version": "1.0.0",
+  "description": "",
+  "main": "forwarder.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hyperswarm/dht": "^6.2.1",
+    "pump": "^3.0.0",
+    "yargs": "^17.5.1"
+  }
+}
