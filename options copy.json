@@ -1,0 +1,17 @@
+{
+    "seed": "test",
+    "schema": [
+        {
+            "mode": "server",
+            "proto": "udp",
+            "port": "7913",
+            "host": "127.0.0.1"
+        },
+        {
+            "mode": "client",
+            "proto": "udp",
+            "port": "7913",
+            "serverport": "7913"
+        }
+    ]
+}
