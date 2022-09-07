@@ -22,7 +22,7 @@ const relay = async () => {
             server: async (keyPair, port, host) => {
                 const server = node.createServer();
                 server.on("connection", function (servsock) {
-                    console.log('connected, relaying to ' + port);
+                    console.log('new connextion, relaying to ' + port);
                     var socket = net.connect(port, host);
                     pump(servsock, socket, servsock);
                 });
@@ -45,7 +45,6 @@ const relay = async () => {
             server: async (keyPair, port, host) => {
                 const server = node.createServer();
                 await server.listen(keyPair);
-                console.log('listening to', keyPair.publicKey.toString('hex'));
                 server.on("connection", function (conn) {
                     console.log('new connection, relaying to ' + port);
                     var client = udp.createSocket('udp4');
