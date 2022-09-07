@@ -4,8 +4,15 @@ const node = new DHT({});
 var net = require("net");
 const udp = require('dgram');
 const options = require('./options.json');
-const { showCompletionScript } = require("yargs");
-
+const readline = require('readline');
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+function generateUID() {
+    var firstPart = (Math.random() * 46656) | 0;
+    var secondPart = (Math.random() * 46656) | 0;
+    firstPart = ("000" + firstPart.toString(36)).slice(-3);
+    secondPart = ("000" + secondPart.toString(36)).slice(-3);
+    return firstPart + secondPart;
+}
 const relay = async () => {
     console.log('starting node');
     const node = new DHT({});
@@ -15,13 +22,12 @@ const relay = async () => {
             server: async (keyPair, port, host) => {
                 const server = node.createServer();
                 server.on("connection", function (servsock) {
-                    console.log('relaying to ' + port);
+                    console.log('connected, relaying to ' + port);
                     var socket = net.connect(port, host);
                     pump(servsock, socket, servsock);
                 });
 
                 server.listen(keyPair);
-                console.log('listening to', keyPair.publicKey.toString('hex'));
                 return keyPair.publicKey;
             },
             client: async (publicKey, port) => {
@@ -31,7 +37,7 @@ const relay = async () => {
                     pump(local, socket, local);
                 });
                 server.listen(port, "127.0.0.1");
-                console.log('listening to', port);
+                console.log('connected');
                 return publicKey;
             }
         },
@@ -77,25 +83,25 @@ const relay = async () => {
 }
 
 const schema = options.schema;
-const seed = options.seed;
-
+let servseed;
+let clientseed;
 const modes = {
-    client: async (seed, proto, port, serverport) => {
+    client: async (proto, port, serverport) => {
+        if (!clientseed) clientseed = await new Promise(res => rl.question('ENTER SEED (FROM THE OTHER PERSON) ', res));
         const rel = await relay();
-        console.log('calling client', seed, proto, port, serverport);
-        const publicKey = DHT.keyPair(DHT.hash(Buffer.from('forward' + seed + proto + serverport))).publicKey;
-        console.log(rel, proto, rel[proto]);
+        const publicKey = DHT.keyPair(DHT.hash(Buffer.from('forward' + clientseed + proto + serverport))).publicKey;
         return (rel)[proto].client(publicKey, port);
     },
-    server: async (seed, proto, port, host) => {
+    server: async (proto, port, host) => {
+        if (!servseed) {
+            servseed = generateUID();
+            console.log("GIVE THIS SEED TO THE OTHER PERSON:", servseed);
+        }
         const rel = await relay();
-        console.log('calling server', seed, proto, port, host);
-        const keyPair = DHT.keyPair(DHT.hash(Buffer.from('forward' + seed + proto + port)));
-        console.log(rel, proto, rel[proto]);
+        const keyPair = DHT.keyPair(DHT.hash(Buffer.from('forward' + servseed + proto + port)));
         return (rel)[proto].server(keyPair, port, host);
     }
 }
-
 for (forwarder of schema) {
-    modes[forwarder.mode](seed, forwarder.proto, forwarder.port, forwarder.host || forwarder.serverport || forwarder.port);
+    modes[forwarder.mode](forwarder.proto, forwarder.port, forwarder.host || forwarder.serverport || forwarder.port);
 }
