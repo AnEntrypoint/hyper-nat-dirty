@@ -2,6 +2,10 @@
 
 This program can tunnel a set of UDP and TCP connections to your computer, allowing them to carry out two directional communications between a server and many clients.
 
+It does this by establishing a peer to peer connection directly to the other computer using an amazing technology called hyperswarm.
+
+https://github.com/hyperswarm
+
 Here is an example of hosting a valheim running for 3 players using this tool over an ordinary mobile phone hotspot with a 10mbps internet connection 
 
 Run server ports on one computer, and run client ports on a group of clients, and you can connect a group of computers to your server.
@@ -66,4 +70,6 @@ serverport specifies the port number on the server
 
 # building
 To build the exe yourself, use a nexe compatible version of node, then run nexe in the path, remember to copy the static builds for sodium and udx
+
+A big thank you to Mathias Buus aka mafintosh for all the help and guidance with my n00b questions and for adding the neccesary features as this project was developed
 
