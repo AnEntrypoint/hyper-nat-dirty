@@ -10,14 +10,18 @@ https://www.youtube.com/watch?v=iFyCTpgiTUE
 
 If you do not wish to download node.js, you can get a prebuild version for windows under releaases.
 
+You will be prompted to share a shortcode with your friends.
+
+# WINDOWS TROUBLESHOOTING
+the terminal in windows pauses when you click on it, it goes into a text-selection mode
+
 Configure a options.json file
 
 # server config for a udp and a tcp port
 mode selects client or server
 proto selects tcp or udp
-port specifies the port number
-serverport specifies the port number on the server
-host specifies where the server is running
+port specifies the port number to share
+host specifies where the game/app server is running
 ```
 {
     "schema": [
@@ -43,6 +47,7 @@ port specifies the port number
 serverport specifies the port number on the server
 ```
 {
+  "schema": [
     {
         "mode": "client",
         "proto": "udp",
@@ -55,7 +60,7 @@ serverport specifies the port number on the server
         "port": "7915",
         "serverport": "7915"
     }
-
+  ]
 }
 ```
 
