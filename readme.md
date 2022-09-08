@@ -1,6 +1,6 @@
 # hyper-nat
 
-This program can tunnel a set of UDP and TCP connections to your computer, allowing them to carry out two directional communications in a 1:1 ratio to the data received, using the shortest possible route between two devices.
+This program can tunnel a set of UDP and TCP connections to your computer, allowing them to carry out two directional communications between a server and many clients.
 
 Here is an example of hosting a valheim running for 3 players using this tool over an ordinary mobile phone hotspot with a 10mbps internet connection 
 
