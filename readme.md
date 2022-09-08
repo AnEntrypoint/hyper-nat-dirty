@@ -7,7 +7,8 @@ Here is an example of hosting a valheim running for 3 players using this tool ov
 Run server ports on one computer, and run client ports on a group of clients, and you can connect a group of computers to your server.
 
 https://www.youtube.com/watch?v=iFyCTpgiTUE
-If you do not wish to download node.js, you can get an exe under releaases.
+
+If you do not wish to download node.js, you can get a prebuild version for windows under releaases.
 
 Configure a options.json file
 
