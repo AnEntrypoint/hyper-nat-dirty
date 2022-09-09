@@ -22,7 +22,7 @@ const relay = async () => {
             server: async (keyPair, port, host) => {
                 const server = node.createServer();
                 server.on("connection", function (servsock) {
-                    console.log('new connextion, relaying to ' + port);
+                    console.log('new connection, relaying to ' + port);
                     var socket = net.connect(port, host);
                     pump(servsock, socket, servsock);
                 });
@@ -37,7 +37,7 @@ const relay = async () => {
                     pump(local, socket, local);
                 });
                 server.listen(port, "127.0.0.1");
-                console.log('connected');
+                console.log('listening on ', port);
                 return publicKey;
             }
         },
@@ -101,6 +101,10 @@ const modes = {
         return (rel)[proto].server(keyPair, port, host);
     }
 }
-for (forwarder of schema) {
-    modes[forwarder.mode](forwarder.proto, forwarder.port, forwarder.host || forwarder.serverport || forwarder.port);
+const run = async () => {
+    for (forwarder of schema) {
+        await modes[forwarder.mode](forwarder.proto, forwarder.port, forwarder.host || forwarder.serverport || forwarder.port);
+    }
+
 }
+run()
