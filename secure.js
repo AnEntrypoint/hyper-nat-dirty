@@ -14,7 +14,6 @@ function generateUID() {
     return firstPart + secondPart;
 }
 const relay = async () => {
-    console.log('starting node');
     const node = new DHT({});
     await node.ready();
     return {
@@ -27,7 +26,6 @@ const relay = async () => {
                     pump(servsock, socket, servsock);
                 });
 
-                console.log('listening to', keyPair.publicKey.toString('hex'));
                 server.listen(keyPair);
                 return keyPair.publicKey;
             },
@@ -46,7 +44,6 @@ const relay = async () => {
             server: async (keyPair, port, host) => {
                 const server = node.createServer();
                 await server.listen(keyPair);
-                console.log('listening to', keyPair.publicKey.toString('hex'));
                 server.on("connection", function (conn) {
                     console.log('new connection, relaying to ' + port);
                     var client = udp.createSocket('udp4');
@@ -88,24 +85,24 @@ let servseed;
 let clientseed;
 const modes = {
     client: async (proto, port, serverport) => {
-        if (!clientseed) clientseed = await new Promise(res => rl.question('ENTER SEED (FROM THE OTHER PERSON) ', res));
+        console.log({ proto, port });
+        clientseed = await new Promise(res => rl.question('ENTER KEY (FROM THE OTHER PERSON) ', res));
         const rel = await relay();
-        const publicKey = DHT.keyPair(DHT.hash(Buffer.from('forward' + clientseed + proto + serverport))).publicKey;
-        return (rel)[proto].client(publicKey, port);
+        return (rel)[proto].client(Buffer.from(clientseed, 'hex'), port);
     },
     server: async (proto, port, host) => {
+        console.log({ proto, port });
         if (!servseed) {
             servseed = generateUID();
-            console.log("GIVE THIS SEED TO THE OTHER PERSON:", servseed);
         }
         const rel = await relay();
         const keyPair = DHT.keyPair(DHT.hash(Buffer.from('forward' + servseed + proto + port)));
+        console.log("SHARE THIS KEY:", keyPair.publicKey.toString('hex'));
         return (rel)[proto].server(keyPair, port, host);
     }
 }
 const run = async () => {
     for (forwarder of schema) {
-        console.log(forwarder);
         await modes[forwarder.mode](forwarder.proto, forwarder.port, forwarder.host || forwarder.serverport || forwarder.port);
     }
 

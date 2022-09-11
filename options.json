@@ -1,0 +1,16 @@
+{
+    "schema": [
+        {
+            "mode": "server",
+            "proto": "udp",
+            "port": "7913",
+            "host": "127.0.0.1"
+        },
+        {
+            "mode": "server",
+            "proto": "tcp",
+            "port": "7915",
+            "host": "127.0.0.1"
+        }
+    ]
+}
