@@ -1,3 +1,35 @@
+const path =  require("path");
+const { WindowsToaster } = require("node-notifier");
+const AppName = "hyperbolic-gate";
+const executable = process.argv[0];
+const SysTray = require('systray').default;
+const systray = new SysTray({
+    menu: {
+        icon: "AAABAAEAEBAAAAEAGABoAwAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAnf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AXv8AhP8AXv8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AXv8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        title: "",
+        tooltip: "hyperbolic gateway",
+        items: [{
+            title: "Exit",
+            tooltip: "exit hyperbolic gateway",
+            checked: false,
+            enabled: true
+        }]
+    },
+    debug: false,
+    copyDir: true,
+})
+ 
+systray.onClick(action => {
+    if (action.seq_id === 0) {
+        systray.kill();
+    }
+})
+ 
+const snoreToastPath = executable.endsWith(".exe") ? path.resolve(executable, "../", "snoretoast-x64.exe") : null;
+let notifierOptions = { withFallback: false, customPath: snoreToastPath };
+const notifier = new WindowsToaster(notifierOptions);
+
+
 const Keychain = require('keypear');
 const DHT = require("@hyperswarm/dht");
 const pump = require("pump");
@@ -25,12 +57,12 @@ const relay = async () => {
             },
             client: async (publicKey, port) => {
                 var server = net.createServer(function (local) {
-                    console.log('connecting to', publicKey.toString('hex'));
+                    console.log('connecting to tcp ', port);
                     const socket = node.connect(publicKey);
                     pump(local, socket, local);
                 });
                 server.listen(port, "127.0.0.1");
-                console.log('listening for local connections on tcp ', port);
+                console.log('listening for local connections on tcp', port);
             }
         },
         udp: {
@@ -47,11 +79,11 @@ const relay = async () => {
                         client.send(buf);
                     })
                 });
-                console.log('listening for remote connections for udp ', port);
+                console.log('listening for remote connections for udp', port);
                 await server.listen(keyPair);
             },
             client: async (publicKey, port) => {
-                console.log('connecting to', publicKey.toString('hex'));
+                console.log('connecting to udp', port);
                 const conn = await node.connect(publicKey);
                 await new Promise(res => conn.on('open', res));
                 console.log('connection open');
@@ -76,31 +108,32 @@ const relay = async () => {
 
 const schema = options.schema;
 let publicKey;
-const kp = DHT.keyPair();
 let noticed;
 const modes = {
-    client: async (proto, port, serverport) => {
-        if (!publicKey) publicKey = await new Promise(res => rl.question('ENTER PUBLIC KEY FROM HOST ', res));
-        const rel = await relay();
+    client: async (settings) => {
+        const {proto, port, publicKey} = settings;
         const keys = new Keychain(base58_to_binary(publicKey));
         const key = keys.get(proto+port).publicKey;
+        const rel = await relay();
         return (rel)[proto].client(key, port);
     },
-    server: async (proto, port, host) => {
-        if(!noticed) {
-            console.log("GIVE THIS KEY TO THE OTHER PERSON:", binary_to_base58(kp.publicKey));
-            noticed=true;
-        }
+    server: async (settings) => {
+        const {proto, port, host, secret} = settings;
+        const kp = DHT.keyPair(DHT.hash(new Uint8Array(secret)));
+        console.log("SHARE THIS PUBLIC KEY:", binary_to_base58(kp.publicKey));
         const rel = await relay();
         const keys = new Keychain(kp);
         const keyPair = keys.get(proto + port);
-        return (rel)[proto].server(keyPair, port, host);
+        (rel)[proto].server(keyPair, port, host);
     }
 }
 const run = async () => {
+    console.log('starting up');
     for (forwarder of schema) {
-        await modes[forwarder.mode](forwarder.proto, forwarder.port, forwarder.host || forwarder.serverport || forwarder.port);
+        await modes[forwarder.mode](forwarder);
     }
 
 }
 run()
+
+
