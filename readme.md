@@ -1,6 +1,8 @@
 # hyper-nat
 
-This program can tunnel a set of UDP and TCP connections to your computer, allowing them to carry out two directional communications between a server and many clients.
+tl;dr: play lan games with your friends or use any other network oriented tool over the internet using peer to peer magic
+
+This program can securely negotiate and tunnel sets of UDP and TCP connections between servers and clients, allowing them to carry out low latency two directional communications without any external routing using back-punching or hole-punching mechanisms with heuristic optimizations to cater for 99% of modern internet connections.
 
 It does this by establishing a peer to peer connection directly to the other computer using an amazing technology called hyperswarm.
 
