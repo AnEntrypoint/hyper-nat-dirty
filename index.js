@@ -1,35 +1,3 @@
-const path =  require("path");
-const { WindowsToaster } = require("node-notifier");
-const AppName = "hyperbolic-gate";
-const executable = process.argv[0];
-const SysTray = require('systray').default;
-const systray = new SysTray({
-    menu: {
-        icon: "AAABAAEAEBAAAAEAGABoAwAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAnf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AXv8AhP8AXv8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AhP8AhP8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AXv8AXv8AXv8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8Anf8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-        title: "",
-        tooltip: "hyperbolic gateway",
-        items: [{
-            title: "Exit",
-            tooltip: "exit hyperbolic gateway",
-            checked: false,
-            enabled: true
-        }]
-    },
-    debug: false,
-    copyDir: true,
-})
- 
-systray.onClick(action => {
-    if (action.seq_id === 0) {
-        systray.kill();
-    }
-})
- 
-const snoreToastPath = executable.endsWith(".exe") ? path.resolve(executable, "../", "snoretoast-x64.exe") : null;
-let notifierOptions = { withFallback: false, customPath: snoreToastPath };
-const notifier = new WindowsToaster(notifierOptions);
-
-
 const Keychain = require('keypear');
 const DHT = require("@hyperswarm/dht");
 const pump = require("pump");
