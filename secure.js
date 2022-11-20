@@ -1,18 +1,12 @@
+const Keychain = require('keypear');
 const DHT = require("@hyperswarm/dht");
 const pump = require("pump");
-const node = new DHT({});
 var net = require("net");
 const udp = require('dgram');
 const options = require('./options.json');
 const readline = require('readline');
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-function generateUID() {
-    var firstPart = (Math.random() * 46656) | 0;
-    var secondPart = (Math.random() * 46656) | 0;
-    firstPart = ("000" + firstPart.toString(36)).slice(-3);
-    secondPart = ("000" + secondPart.toString(36)).slice(-3);
-    return firstPart + secondPart;
-}
+const { base58_to_binary, binary_to_base58 } = require('base58-js')
 const relay = async () => {
     const node = new DHT({});
     await node.ready();
@@ -26,8 +20,8 @@ const relay = async () => {
                     pump(servsock, socket, servsock);
                 });
 
+                console.log('listening for remote connections for tcp ', port);
                 server.listen(keyPair);
-                return keyPair.publicKey;
             },
             client: async (publicKey, port) => {
                 var server = net.createServer(function (local) {
@@ -36,14 +30,12 @@ const relay = async () => {
                     pump(local, socket, local);
                 });
                 server.listen(port, "127.0.0.1");
-                console.log('listening on ', port);
-                return publicKey;
+                console.log('listening for local connections on tcp ', port);
             }
         },
         udp: {
             server: async (keyPair, port, host) => {
                 const server = node.createServer();
-                await server.listen(keyPair);
                 server.on("connection", function (conn) {
                     console.log('new connection, relaying to ' + port);
                     var client = udp.createSocket('udp4');
@@ -55,6 +47,8 @@ const relay = async () => {
                         client.send(buf);
                     })
                 });
+                console.log('listening for remote connections for udp ', port);
+                await server.listen(keyPair);
             },
             client: async (publicKey, port) => {
                 console.log('connecting to', publicKey.toString('hex'));
@@ -74,30 +68,32 @@ const relay = async () => {
                     server.send(buf, inport);
                 })
                 server.bind(port);
-                console.log('connected, listening on UDP ', port);
+                console.log('UDP stream ready, listening for packets on ', port);
             }
         }
     }
 }
 
 const schema = options.schema;
-let servseed;
-let clientseed;
+let publicKey;
+const kp = DHT.keyPair();
+let noticed;
 const modes = {
     client: async (proto, port, serverport) => {
-        console.log({ proto, port });
-        clientseed = await new Promise(res => rl.question('ENTER KEY (FROM THE OTHER PERSON) ', res));
+        if (!publicKey) publicKey = await new Promise(res => rl.question('ENTER PUBLIC KEY FROM HOST ', res));
         const rel = await relay();
-        return (rel)[proto].client(Buffer.from(clientseed, 'hex'), port);
+        const keys = new Keychain(base58_to_binary(publicKey));
+        const key = keys.get(proto+port).publicKey;
+        return (rel)[proto].client(key, port);
     },
     server: async (proto, port, host) => {
-        console.log({ proto, port });
-        if (!servseed) {
-            servseed = generateUID();
+        if(!noticed) {
+            console.log("GIVE THIS KEY TO THE OTHER PERSON:", binary_to_base58(kp.publicKey));
+            noticed=true;
         }
         const rel = await relay();
-        const keyPair = DHT.keyPair(DHT.hash(Buffer.from('forward' + servseed + proto + port)));
-        console.log("SHARE THIS KEY:", keyPair.publicKey.toString('hex'));
+        const keys = new Keychain(kp);
+        const keyPair = keys.get(proto + port);
         return (rel)[proto].server(keyPair, port, host);
     }
 }
