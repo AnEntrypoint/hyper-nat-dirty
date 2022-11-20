@@ -65,13 +65,14 @@ when their app starts and is based on their secret
         "proto": "udp",
         "port": "7913",
         "serverport": "7913",
-        "publicKey":""
+        "publicKey":"8KdZA6WUUjkpSJSFoUHKfuj2hTygNkbLFnREPwn8u89r"
     },
     {
         "mode": "client",
         "proto": "tcp",
         "port": "7915",
-        "serverport": "7915"
+        "serverport": "7915",
+        "publicKey":"8KdZA6WUUjkpSJSFoUHKfuj2hTygNkbLFnREPwn8u89r"
     }
   ]
 }
