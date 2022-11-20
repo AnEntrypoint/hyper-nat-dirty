@@ -26,6 +26,9 @@ mode selects client or server
 proto selects tcp or udp
 port specifies the port number to share
 host specifies where the game/app server is running
+secret is your unique secret code, dont use the same
+  one in two places, because its also your identifier
+  on the peer to peer network
 ```
 {
     "schema": [
@@ -33,13 +36,15 @@ host specifies where the game/app server is running
             "mode": "server",
             "proto": "udp",
             "port": "7913",
-            "host": "127.0.0.1"
+            "host": "127.0.0.1",
+            "secret":"thisisaseretsecret"
         },
         {
             "mode": "server",
             "proto": "tcp",
             "port": "7915",
-            "host": "127.0.0.1"
+            "host": "127.0.0.1",
+            "secret":"thisisaseretsecret"
         }
     ]
 }
@@ -49,6 +54,9 @@ mode selects client or server
 proto selects tcp or udp
 port specifies the port number
 serverport specifies the port number on the server
+publicKey is provided to you by the person who starts
+the server, it will be printed on their terminal
+when their app starts and is based on their secret
 ```
 {
   "schema": [
@@ -56,7 +64,8 @@ serverport specifies the port number on the server
         "mode": "client",
         "proto": "udp",
         "port": "7913",
-        "serverport": "7913"
+        "serverport": "7913",
+        "publicKey":""
     },
     {
         "mode": "client",
