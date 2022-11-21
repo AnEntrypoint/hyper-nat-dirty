@@ -24,11 +24,16 @@ the terminal in windows pauses when you click on it, it goes into a text-selecti
 Configure a options.json file
 
 # server config for a udp and a tcp port
-mode selects client or server
-proto selects tcp or udp
-port specifies the port number to share
-host specifies where the game/app server is running
-secret is your unique secret code, dont use the same
+# mode
+selects client or server
+# proto 
+selects tcp or udp
+# port 
+specifies the port number to share
+# host 
+specifies where the game/app server is running
+# secret 
+is your unique secret code, dont use the same
   one in two places, because its also your identifier
   on the peer to peer network
 ```
@@ -52,10 +57,14 @@ secret is your unique secret code, dont use the same
 }
 ```
 # client config for the same ports
-mode selects client or server
-proto selects tcp or udp
-port specifies the port number
-serverport specifies the port number on the server
+# mode 
+selects client or server
+# proto 
+selects tcp or udp
+# port 
+specifies the port number
+# serverport 
+specifies the port number on the server
 publicKey is provided to you by the person who starts
 the server, it will be printed on their terminal
 when their app starts and is based on their secret
