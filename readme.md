@@ -65,7 +65,8 @@ selects tcp or udp
 specifies the port number
 # serverport 
 specifies the port number on the server
-publicKey is provided to you by the person who starts
+# publicKey
+is provided to you by the person who starts
 the server, it will be printed on their terminal
 when their app starts and is based on their secret
 ```
