@@ -8,8 +8,6 @@ It does this by establishing a peer to peer connection directly to the other com
 
 https://github.com/hyperswarm
 
-Here is an example of hosting a valheim running for 3 players using this tool over an ordinary mobile phone hotspot with a 10mbps internet connection 
-
 Run server ports on one computer, and run client ports on a group of clients, and you can connect a group of computers to your server.
 
 https://www.youtube.com/watch?v=iFyCTpgiTUE
