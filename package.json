@@ -2,10 +2,10 @@
   "name": "udp-forward",
   "version": "1.0.0",
   "description": "",
-  "main": "forwarder.js",
+  "main": "index.js",
   "scripts": {
     "build": "npx nexe",
-    "start": "node forwarder.js"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
