@@ -4,8 +4,6 @@ const pump = require("pump");
 var net = require("net");
 const udp = require('dgram');
 const options = require('./options.json');
-const readline = require('readline');
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const { base58_to_binary, binary_to_base58 } = require('base58-js')
 const relay = async () => {
     const node = new DHT({});
@@ -75,8 +73,7 @@ const relay = async () => {
 }
 
 const schema = options.schema;
-let publicKey;
-let noticed;
+
 const modes = {
     client: async (settings) => {
         const {proto, port, publicKey} = settings;
@@ -87,7 +84,8 @@ const modes = {
     },
     server: async (settings) => {
         const {proto, port, host, secret} = settings;
-        const kp = DHT.keyPair(DHT.hash(new Uint8Array(secret)));
+        const hash = DHT.hash(Buffer.from(secret));
+        const kp = DHT.keyPair(hash);
         console.log("SHARE THIS PUBLIC KEY:", binary_to_base58(kp.publicKey));
         const rel = await relay();
         const keys = new Keychain(kp);
